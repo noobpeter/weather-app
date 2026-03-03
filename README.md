@@ -63,7 +63,9 @@
 
 ## 📦 安装与使用
 
-### 方式一：直接打开
+⚠️ **重要提示**：直接双击打开 `index.html` 无法正常使用，因为浏览器安全策略会阻止本地文件访问 API。请使用以下方式运行：
+
+### 方式一：Python（推荐）
 ```bash
 # 克隆仓库
 git clone https://github.com/noobpeter/weather-app.git
@@ -71,20 +73,24 @@ git clone https://github.com/noobpeter/weather-app.git
 # 进入目录
 cd weather-app
 
-# 用浏览器打开
-open index.html
-```
-
-### 方式二：本地服务器（推荐）
-```bash
-# 使用 Python 启动本地服务器
+# 启动本地服务器
 python3 -m http.server 8080
 
-# 或使用 Node.js
+# 访问 http://localhost:8080
+```
+
+### 方式二：Node.js
+```bash
+# 使用 npx serve
 npx serve .
 
-# 然后访问 http://localhost:8080
+# 或使用 http-server
+npx http-server -p 8080
 ```
+
+### 方式三：VS Code
+1. 安装 **Live Server** 扩展
+2. 右键点击 `index.html` → "Open with Live Server"
 
 ---
 

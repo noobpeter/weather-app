@@ -60,7 +60,17 @@ async function searchWeather() {
         displayWeather(data);
         
     } catch (error) {
-        showError('连接失败: ' + error.message + '<br>请检查城市名称或稍后重试');
+        // 检测是否是本地文件协议导致的 CORS 错误
+        const isLocalFile = window.location.protocol === 'file:';
+        const isCorsError = error.message.includes('Failed to fetch') || 
+                           error.message.includes('CORS') ||
+                           error.message.includes('NetworkError');
+        
+        if (isLocalFile && isCorsError) {
+            showLocalServerError();
+        } else {
+            showError('连接失败: ' + error.message + '<br>请检查城市名称或稍后重试');
+        }
     } finally {
         searchBtn.disabled = false;
         searchBtn.textContent = '观测';
@@ -194,6 +204,31 @@ function showError(message) {
         <div class="error-container fade-in">
             <div class="error-icon">⚠️</div>
             <p class="error-text">${message}</p>
+        </div>
+    `;
+}
+
+function showLocalServerError() {
+    const resultDiv = document.getElementById('result');
+    resultDiv.innerHTML = `
+        <div class="weather-card fade-in" style="text-align: center; padding: 40px;">
+            <div style="font-size: 4rem; margin-bottom: 20px;">🔒</div>
+            <h3 style="font-size: 1.5rem; margin-bottom: 16px; color: var(--neon-pink);">安全限制</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.6;">
+                由于浏览器安全策略，直接打开本地 HTML 文件无法访问天气 API。<br>
+                请使用以下方式运行：
+            </p>
+            <div style="background: rgba(0,0,0,0.3); border-radius: 12px; padding: 20px; text-align: left; font-family: 'JetBrains Mono', monospace; font-size: 0.875rem; color: var(--neon-cyan);">
+                <p style="margin-bottom: 12px; color: var(--text-muted);">方式一：Python</p>
+                <p style="margin-bottom: 20px;">python3 -m http.server 8080</p>
+                <p style="margin-bottom: 12px; color: var(--text-muted);">方式二：Node.js</p>
+                <p style="margin-bottom: 20px;">npx serve .</p>
+                <p style="margin-bottom: 12px; color: var(--text-muted);">方式三：VS Code</p>
+                <p>安装 Live Server 插件，点击 "Go Live"</p>
+            </div>
+            <p style="color: var(--text-muted); margin-top: 20px; font-size: 0.875rem;">
+                然后访问 http://localhost:8080
+            </p>
         </div>
     `;
 }
