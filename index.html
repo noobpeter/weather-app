@@ -3,171 +3,531 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>城市天气查询</title>
+    <title>ATMOS — 大气观测站</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --bg-card: rgba(20, 20, 35, 0.8);
+            --neon-cyan: #00f5d4;
+            --neon-pink: #ff006e;
+            --neon-purple: #8338ec;
+            --neon-orange: #fb5607;
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            --text-muted: rgba(255, 255, 255, 0.3);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg-dark);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            color: var(--text-primary);
+            overflow-x: hidden;
+            position: relative;
         }
-        
-        .container {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            max-width: 500px;
+
+        /* 动态背景 */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
         }
-        
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 30px;
-            font-size: 28px;
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0, 245, 212, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 0, 110, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(131, 56, 236, 0.1) 0%, transparent 40%);
+            animation: bgFloat 20s ease-in-out infinite;
         }
-        
-        .search-box {
+
+        @keyframes bgFloat {
+            0%, 100% { transform: translate(-10%, -10%) rotate(0deg); }
+            50% { transform: translate(10%, 10%) rotate(180deg); }
+        }
+
+        /* 噪点纹理 */
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.03;
+            pointer-events: none;
+            z-index: 1;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Header */
+        header {
             display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 60px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid var(--glass-border);
         }
-        
-        input[type="text"] {
-            flex: 1;
-            padding: 15px 20px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 16px;
-            transition: border-color 0.3s;
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -2px;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
-        
-        input[type="text"]:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        
-        button {
-            padding: 15px 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
-        }
-        
-        button:disabled {
+
+        .logo span {
+            font-weight: 300;
             opacity: 0.6;
+        }
+
+        .tagline {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+        }
+
+        /* Search Section */
+        .search-section {
+            margin-bottom: 60px;
+        }
+
+        .search-container {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 24px;
+            font-size: 1.5rem;
+            opacity: 0.5;
+            z-index: 3;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 24px 80px 24px 60px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 400;
+            color: var(--text-primary);
+            background: var(--bg-card);
+            border: 2px solid var(--glass-border);
+            border-radius: 16px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            outline: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        input[type="text"]::placeholder {
+            color: var(--text-muted);
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--neon-cyan);
+            box-shadow: 
+                0 0 30px rgba(0, 245, 212, 0.3),
+                inset 0 0 30px rgba(0, 245, 212, 0.05);
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 8px;
+            padding: 16px 32px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--bg-dark);
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(0, 245, 212, 0.4);
+        }
+
+        .search-btn:disabled {
+            opacity: 0.5;
             cursor: not-allowed;
             transform: none;
         }
-        
-        .loading {
-            text-align: center;
-            color: #666;
-            padding: 20px;
-        }
-        
-        .error {
-            background: #fee;
-            color: #c33;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-            margin-top: 20px;
-        }
-        
-        .weather-result {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 15px;
-            margin-top: 20px;
-            text-align: center;
-        }
-        
-        .city-name {
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
-        
-        .temperature {
-            font-size: 48px;
-            font-weight: bold;
-            margin: 20px 0;
-        }
-        
-        .condition {
-            font-size: 18px;
-            margin-bottom: 20px;
-            opacity: 0.9;
-        }
-        
-        .details {
+
+        /* Results Section */
+        .result-container {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255,255,255,0.3);
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 40px;
         }
-        
-        .detail-item {
+
+        @media (max-width: 900px) {
+            .result-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .weather-card {
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .weather-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple), var(--neon-pink));
+        }
+
+        .main-card {
+            grid-column: span 2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 40px;
+        }
+
+        @media (max-width: 900px) {
+            .main-card {
+                grid-column: span 1;
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        .location-info h2 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -1px;
+        }
+
+        .location-info .country {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .weather-display {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .weather-icon {
+            font-size: 6rem;
+            filter: drop-shadow(0 0 30px rgba(0, 245, 212, 0.5));
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .temperature {
+            font-size: 5rem;
+            font-weight: 300;
+            line-height: 1;
+            background: linear-gradient(135deg, var(--text-primary), var(--neon-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .temperature sup {
+            font-size: 2rem;
+            font-weight: 400;
+        }
+
+        .condition {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: var(--neon-cyan);
+            transform: translateY(-4px);
+        }
+
+        .stat-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .stat-value span {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-left: 4px;
+        }
+
+        /* Forecast Card */
+        .forecast-section h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .forecast-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .forecast-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .forecast-item:hover {
+            border-color: var(--glass-border);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .forecast-day {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .forecast-icon {
+            font-size: 1.5rem;
+        }
+
+        .forecast-temp {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--neon-cyan);
+            font-weight: 500;
+        }
+
+        /* Loading State */
+        .loading-container {
+            text-align: center;
+            padding: 60px;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 3px solid var(--glass-border);
+            border-top-color: var(--neon-cyan);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 24px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            letter-spacing: 2px;
+        }
+
+        /* Error State */
+        .error-container {
+            background: rgba(255, 0, 110, 0.1);
+            border: 1px solid rgba(255, 0, 110, 0.3);
+            border-radius: 16px;
+            padding: 30px;
             text-align: center;
         }
-        
-        .detail-label {
-            font-size: 12px;
-            opacity: 0.8;
-            margin-bottom: 5px;
+
+        .error-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
         }
-        
-        .detail-value {
-            font-size: 16px;
-            font-weight: bold;
+
+        .error-text {
+            color: var(--neon-pink);
+            font-weight: 500;
         }
-        
-        .footer {
+
+        /* Footer */
+        footer {
+            margin-top: 80px;
+            padding-top: 30px;
+            border-top: 1px solid var(--glass-border);
             text-align: center;
-            margin-top: 30px;
-            color: #999;
-            font-size: 12px;
         }
+
+        .footer-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+        }
+
+        .footer-text a {
+            color: var(--neon-cyan);
+            text-decoration: none;
+            transition: opacity 0.3s;
+        }
+
+        .footer-text a:hover {
+            opacity: 0.7;
+        }
+
+        /* Initial State */
+        .initial-state {
+            text-align: center;
+            padding: 100px 20px;
+        }
+
+        .initial-state .icon {
+            font-size: 5rem;
+            margin-bottom: 24px;
+            opacity: 0.3;
+        }
+
+        .initial-state p {
+            color: var(--text-muted);
+            font-size: 1.125rem;
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stagger-1 { animation-delay: 0.1s; }
+        .stagger-2 { animation-delay: 0.2s; }
+        .stagger-3 { animation-delay: 0.3s; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🌤️ 城市天气查询</h1>
-        
-        <div class="search-box">
-            <input type="text" id="cityInput" placeholder="输入城市名称（如：北京、Shanghai、London）" />
-            <button onclick="searchWeather()" id="searchBtn">查询</button>
-        </div>
-        
-        <div id="result"></div>
-        
-        <div class="footer">
-            数据来源: wttr.in | 支持全球城市
-        </div>
-    </div>
+    <div class="bg-animation"></div>
+    <div class="noise"></div>
     
+    <div class="container">
+        <header>
+            <div class="logo">ATMOS<span>°</span></div>
+            <div class="tagline">大气观测站</div>
+        </header>
+
+        <section class="search-section">
+            <div class="search-container">
+                <div class="search-input-wrapper">
+                    <span class="search-icon">⌕</span>
+                    <input type="text" id="cityInput" placeholder="探索城市天气..." />
+                    <button onclick="searchWeather()" id="searchBtn" class="search-btn">观测</button>
+                </div>
+            </div>
+        </section>
+
+        <div id="result"></div>
+
+        <footer>
+            <p class="footer-text">POWERED BY <a href="https://wttr.in" target="_blank">WTTR.IN</a> API</p>
+        </footer>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
