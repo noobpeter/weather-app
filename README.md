@@ -65,32 +65,71 @@
 
 ⚠️ **重要提示**：直接双击打开 `index.html` 无法正常使用，因为浏览器安全策略会阻止本地文件访问 API。请使用以下方式运行：
 
-### 方式一：Python（推荐）
+### ⚡ 快速开始
+
 ```bash
-# 克隆仓库
+# 1. 克隆项目
 git clone https://github.com/noobpeter/weather-app.git
 
-# 进入目录
+# 2. 进入目录
 cd weather-app
 
-# 启动本地服务器
+# 3. 启动本地服务器
 python3 -m http.server 8080
 
-# 访问 http://localhost:8080
+# 4. 浏览器访问
+open http://localhost:8080
 ```
 
-### 方式二：Node.js
-```bash
-# 使用 npx serve
-npx serve .
+### 其他启动方式
 
-# 或使用 http-server
+**Node.js:**
+```bash
+npx serve .
+# 或
 npx http-server -p 8080
 ```
 
-### 方式三：VS Code
+**VS Code:**
 1. 安装 **Live Server** 扩展
 2. 右键点击 `index.html` → "Open with Live Server"
+
+---
+
+## ❓ 常见问题
+
+### Q: 为什么直接打开 HTML 文件无法使用？
+**A**: 浏览器安全策略（CORS）阻止本地文件访问外部 API。必须使用本地服务器运行。
+
+### Q: 支持哪些浏览器？
+**A**: 
+- ✅ Chrome / Edge (推荐)
+- ✅ Firefox
+- ✅ Safari
+- ⚠️ IE 不支持
+
+### Q: 数据从哪里来？需要 API Key 吗？
+**A**: 使用 [wttr.in](https://wttr.in) 提供的免费天气 API，**完全免费，无需注册**。
+
+### Q: 为什么有时候查询会失败？
+**A**: 
+- 网络连接问题
+- wttr.in 服务暂时不可用
+- 输入的城市名称不正确
+
+请检查拼写或稍后重试。
+
+---
+
+## 🌟 项目结构
+
+```
+weather-app/
+├── index.html          # 主页面
+├── script.js           # 交互逻辑
+├── README.md           # 项目文档
+└── screenshot.png      # 预览图（可选）
+```
 
 ---
 
