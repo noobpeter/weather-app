@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌤️</text></svg>">
     <style>
         :root {
             --bg-dark: #0a0a0f;
@@ -499,6 +500,87 @@
         .stagger-1 { animation-delay: 0.1s; }
         .stagger-2 { animation-delay: 0.2s; }
         .stagger-3 { animation-delay: 0.3s; }
+
+        /* 输入提示 */
+        .input-hint {
+            margin-top: 12px;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .input-hint.success {
+            background: rgba(0, 245, 212, 0.1);
+            border: 1px solid rgba(0, 245, 212, 0.3);
+            color: var(--neon-cyan);
+        }
+
+        .input-hint.warning {
+            background: rgba(251, 86, 7, 0.1);
+            border: 1px solid rgba(251, 86, 7, 0.3);
+            color: var(--neon-orange);
+        }
+
+        /* 热门城市 */
+        .hot-cities {
+            margin-top: 40px;
+        }
+
+        .hot-title {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .city-tags {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .city-tag {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            padding: 10px 20px;
+            border-radius: 24px;
+            cursor: pointer;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+
+        .city-tag:hover {
+            background: rgba(0, 245, 212, 0.1);
+            border-color: var(--neon-cyan);
+            color: var(--neon-cyan);
+            transform: translateY(-2px);
+        }
+
+        /* 重试按钮 */
+        .retry-btn {
+            margin-top: 16px;
+            padding: 12px 32px;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+            color: var(--bg-dark);
+            border: none;
+            border-radius: 8px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .retry-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(0, 245, 212, 0.4);
+        }
     </style>
 </head>
 <body>
@@ -524,7 +606,7 @@
         <div id="result"></div>
 
         <footer>
-            <p class="footer-text">POWERED BY <a href="https://wttr.in" target="_blank">WTTR.IN</a> API</p>
+            <p class="footer-text">POWERED BY <a href="https://open-meteo.com" target="_blank">OPEN-METEO</a> API</p>
         </footer>
     </div>
 
