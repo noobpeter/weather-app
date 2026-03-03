@@ -119,64 +119,63 @@
             letter-spacing: 4px;
         }
 
-        /* Search Section */
+        /* Search Section - 重新设计 */
         .search-section {
             margin-bottom: 60px;
         }
 
         .search-container {
-            position: relative;
             max-width: 600px;
             margin: 0 auto;
         }
 
-        .search-input-wrapper {
+        .search-box {
             position: relative;
             display: flex;
             align-items: center;
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 24px;
-            font-size: 1.5rem;
-            opacity: 0.5;
-            z-index: 3;
-        }
-
-        input[type="text"] {
-            width: 100%;
-            padding: 24px 80px 24px 60px;
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.25rem;
-            font-weight: 400;
-            color: var(--text-primary);
+            gap: 12px;
             background: var(--bg-card);
             border: 2px solid var(--glass-border);
             border-radius: 16px;
+            padding: 8px 8px 8px 20px;
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            outline: none;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        input[type="text"]::placeholder {
-            color: var(--text-muted);
-        }
-
-        input[type="text"]:focus {
+        .search-box:focus-within {
             border-color: var(--neon-cyan);
             box-shadow: 
                 0 0 30px rgba(0, 245, 212, 0.3),
                 inset 0 0 30px rgba(0, 245, 212, 0.05);
         }
 
-        .search-btn {
-            position: absolute;
-            right: 8px;
-            padding: 16px 32px;
+        .search-icon {
+            font-size: 1.5rem;
+            opacity: 0.5;
+            flex-shrink: 0;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 16px 8px;
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 1rem;
+            font-size: 1.125rem;
+            font-weight: 400;
+            color: var(--text-primary);
+            background: transparent;
+            border: none;
+            outline: none;
+        }
+
+        input[type="text"]::placeholder {
+            color: var(--text-muted);
+        }
+
+        .search-btn {
+            padding: 14px 28px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.9375rem;
             font-weight: 600;
             color: var(--bg-dark);
             background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
@@ -186,6 +185,7 @@
             transition: all 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 1px;
+            flex-shrink: 0;
         }
 
         .search-btn:hover {
@@ -197,6 +197,50 @@
             opacity: 0.5;
             cursor: not-allowed;
             transform: none;
+        }
+
+        /* 输入提示 - 独立显示在搜索框下方 */
+        .input-hint-wrapper {
+            margin-top: 12px;
+            min-height: 40px;
+        }
+
+        .input-hint {
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+            text-align: center;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .input-hint.success {
+            background: rgba(0, 245, 212, 0.1);
+            border: 1px solid rgba(0, 245, 212, 0.3);
+            color: var(--neon-cyan);
+        }
+
+        .input-hint.warning {
+            background: rgba(251, 86, 7, 0.1);
+            border: 1px solid rgba(251, 86, 7, 0.3);
+            color: var(--neon-orange);
+        }
+
+        .input-hint.info {
+            background: rgba(131, 56, 236, 0.1);
+            border: 1px solid rgba(131, 56, 236, 0.3);
+            color: var(--neon-purple);
         }
 
         /* Results Section */
@@ -501,28 +545,6 @@
         .stagger-2 { animation-delay: 0.2s; }
         .stagger-3 { animation-delay: 0.3s; }
 
-        /* 输入提示 */
-        .input-hint {
-            margin-top: 12px;
-            padding: 10px 16px;
-            border-radius: 8px;
-            font-size: 0.875rem;
-            transition: all 0.3s ease;
-            text-align: center;
-        }
-
-        .input-hint.success {
-            background: rgba(0, 245, 212, 0.1);
-            border: 1px solid rgba(0, 245, 212, 0.3);
-            color: var(--neon-cyan);
-        }
-
-        .input-hint.warning {
-            background: rgba(251, 86, 7, 0.1);
-            border: 1px solid rgba(251, 86, 7, 0.3);
-            color: var(--neon-orange);
-        }
-
         /* 热门城市 */
         .hot-cities {
             margin-top: 40px;
@@ -595,11 +617,12 @@
 
         <section class="search-section">
             <div class="search-container">
-                <div class="search-input-wrapper">
+                <div class="search-box">
                     <span class="search-icon">⌕</span>
-                    <input type="text" id="cityInput" placeholder="探索城市天气..." />
+                    <input type="text" id="cityInput" placeholder="输入城市名称，如: shanghai, Beijing, Tokyo..." />
                     <button onclick="searchWeather()" id="searchBtn" class="search-btn">观测</button>
                 </div>
+                <div class="input-hint-wrapper" id="hintWrapper"></div>
             </div>
         </section>
 

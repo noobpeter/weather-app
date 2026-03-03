@@ -122,30 +122,37 @@ function hasChinese(str) {
 function handleInput(e) {
     const input = e.target;
     const value = input.value.trim();
-    const hint = document.getElementById('inputHint') || createHintElement();
+    const hintWrapper = document.getElementById('hintWrapper');
+    
+    if (!value) {
+        hintWrapper.innerHTML = '';
+        return;
+    }
     
     if (hasChinese(value)) {
         const mapped = CITY_MAPPING[value];
         if (mapped) {
-            hint.innerHTML = `将搜索: <strong>${mapped}</strong> (已自动转换)`;
-            hint.className = 'input-hint success';
+            hintWrapper.innerHTML = `
+                <div class="input-hint success">
+                    ✓ 将搜索: <strong>${mapped}</strong> (已自动转换)
+                </div>
+            `;
         } else {
-            hint.innerHTML = `中文城市名可能无法识别，建议尝试拼音或英文，如 "shanghai" 或 "Beijing"`;
-            hint.className = 'input-hint warning';
+            hintWrapper.innerHTML = `
+                <div class="input-hint warning">
+                    ⚠ 中文城市名可能无法识别，建议尝试拼音或英文
+                </div>
+            `;
         }
     } else {
-        hint.textContent = '';
+        hintWrapper.innerHTML = '';
     }
 }
 
 // 创建提示元素
 function createHintElement() {
-    const input = document.getElementById('cityInput');
-    const hint = document.createElement('div');
-    hint.id = 'inputHint';
-    hint.className = 'input-hint';
-    input.parentNode.appendChild(hint);
-    return hint;
+    const hintWrapper = document.getElementById('hintWrapper');
+    return hintWrapper;
 }
 
 // 选择城市
